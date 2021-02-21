@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% block content %}
+<form action="#" method="post">
+    device_key: <input type="text" name="device_key">
+    device_type: <input type="text" name="device_type">
+    <input type="submit" value="submit">
+
+</form>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p> {{msg}}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% endblock %}
+</body>
+</html>

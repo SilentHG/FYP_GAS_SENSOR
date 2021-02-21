@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+
+  .customers {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+.customers td, .customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.customers tr:nth-child(even){background-color: #f2f2f2;}
+
+.customers tr:hover {background-color: #ddd;}
+
+.customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+
+  .square {
+  height: 80px;
+  width: 100px;
+  border-style: solid;
+  border-color: black;
+  position : relative;
+
+
+
+}
+
+.dot {
+  height: 50px;
+  width: 50px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  text-align: center;
+   margin-top : 15px;
+   margin-left : 25px;
+   position : absolute;
+
+
+
+}
+
+    body {font-family: Arial, Helvetica, sans-serif;}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+/* Center the image and position the close button */
+.imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+  position: relative;
+}
+
+img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+.container {
+  padding: 16px;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)}
+  to {-webkit-transform: scale(1)}
+}
+
+@keyframes animatezoom {
+  from {transform: scale(0)}
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+
+
+}
+  </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script >
+  {% if len>1 %}
+  function executeQuery() {
+  var val, date;
+  $.ajax({
+   data: JSON.stringify({
+        key : {{ device_key }} }),
+    url: '/v1/get',
+    type : 'POST',
+    success: function(data) {
+      // do something with the return value here if you like
+      {%for i in range(0, len)%}
+
+      $('#key_{{device_key[i]}}_value').text(data.value[0][{{i}}]);
+      $('#key_{{device_key[i]}}_date').text(data.time[0][{{i}}]);
+      {%endfor%}
+    }
+  });
+  setTimeout(executeQuery, 5000); // you could choose not to continue on failure...
+}
+
+$(document).ready(function() {
+  // run the first time; all subsequent calls will take care of themselves
+  setTimeout(executeQuery, 5000);
+});
+{%endif%}
+
+
+  </script>
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+      <h1>Profile</h1>
+      <hr>
+
+      <div class="card">
+        <div class="card-body">
+          {% if username %}
+          <h5 class="card-title">{{ username }}</h5>
+            <p> You Have {{sensors_number}} Sensors </p>
+            <table class="customers">
+          <tr>
+            <th>Device Key</th>
+            <th>Device Data</th>
+            <th>Data's Time</th>
+          </tr>
+          {%for i in range(0, len)%}
+                <tr>
+            <td id = "key_{{device_key[i]}}" > {{device_key[i]}} </td>
+            <td id = "key_{{device_key[i]}}_value" > Loading </td>
+            <td id = "key_{{device_key[i]}}_date" > device_date </td>
+          </tr>
+
+          {%endfor%}
+            </table>
+            {% else %}
+
+          <p>User {{ username }} not found</p>
+
+          {% endif %}
+
+            <h2>Add New Device</h2>
+
+<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Add Device</button>
+
+<div id="id01" class="modal">
+
+  <form class="modal-content animate" action="{{ url_for('add_device') }}" method="post">
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+      <img src="/static/add_icon.png" alt="Avatar" class="avatar">
+    </div>
+
+    <div class="container">
+      <label for="uname"><b>device_key</b></label>
+      <input type="text" placeholder="Enter Key" name="device_key" required>
+
+      <label for="psw"><b>device_type</b></label>
+      <input type="text" placeholder="Enter Type" name="device_type" required>
+
+      <button type="submit">ADD Device</button>
+
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+
+
+    </div>
+  </form>
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
