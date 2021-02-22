@@ -49,6 +49,41 @@ def homepage():
     return redirect(url_for("login"))
 
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == "POST":
+        try:
+            user_email = request.form["email"]
+            user_password = request.form["password"]
+            user_con_password = request.form["con_password"]
+
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT u_email,u_password from Test_DB.dbo.users where u_email ='" + user_email + "' and u_password ='" + user_password + "';")
+            list_cursor = list(cursor)
+            if len(list_cursor) == 0:
+
+                if user_password == user_con_password:
+
+                    cursor = conn.cursor()
+                    cursor.execute("Insert into Test_DB.dbo.users values ('" + user_email + "','" + user_password + "');")
+                    conn.commit()
+
+                    return redirect(url_for("login"))
+
+                else:
+                    flash("Passwords do not match")
+                    return render_template("signup.html")
+            else:
+                flash("User Already Exists")
+                return render_template("signup.html")
+        except Exception as e:
+            flash(e)
+            return render_template("signup.html")
+    else:
+        return render_template("signup.html")
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
@@ -71,32 +106,6 @@ def login():
             return render_template("login.html")
         else:
             return redirect(url_for("dashboard"))
-
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == "POST":
-        try:
-            user_email = request.form["email"]
-            user_password = request.form["password"]
-            user_con_password = request.form["con_password"]
-            
-            if user_password == user_con_password:
-
-                cursor = conn.cursor()
-                cursor.execute("Insert into Test_DB.dbo.users values ('" + user_email + "','" + user_password + "');")
-                conn.commit()
-
-                return redirect(url_for("login"))
-
-            else:
-                flash("Passwords do not match")
-                return render_template("signup.html")
-        except Exception as e:
-            flash(e)
-            return render_template("signup.html")
-    else:
-        return render_template("signup.html")
 
 
 @app.route('/dashboard/')
