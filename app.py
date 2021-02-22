@@ -59,7 +59,7 @@ def signup():
 
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT u_email,u_password from Test_DB.dbo.users where u_email ='" + user_email + "' and u_password ='" + user_password + "';")
+                "SELECT u_email,u_password from Test_DB.dbo.users where u_email ='" + user_email + "';")
             list_cursor = list(cursor)
             if len(list_cursor) == 0:
 
