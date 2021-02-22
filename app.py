@@ -44,9 +44,9 @@ def getting():
 
 
 @app.route('/')
-def Hello_world():
+def homepage():
     session["username"] = None
-    return 'Hello World'
+    return redirect(url_for("login"))
 
 
 @app.route('/login', methods=['GET', 'POST'])
