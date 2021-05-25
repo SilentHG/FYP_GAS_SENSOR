@@ -3,6 +3,42 @@
 <head>
   <style>
 
+  .topnav {
+  background-color: #333;
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a.logout {
+  float: right;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Add a color to the active/current link */
+.topnav a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
   .customers {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
@@ -179,7 +215,6 @@ span.psw {
   {% if len>0 %}
   function executeQuery() {
   console.log('sending')
-  var val, date;
   $.ajax({
    data: JSON.stringify({
         key : {{ device_key }} }),
@@ -190,7 +225,44 @@ span.psw {
       {%for i in range(0, len)%}
 
       $('#key_{{device_key[i]}}_value').text(data.value[0][{{i}}]);
+
+      $('#key_{{device_key[i]}}_value_2').text(data.value_2[0][{{i}}]);
+
       $('#key_{{device_key[i]}}_date').text(data.time[0][{{i}}]);
+
+
+      if (data.value[0][{{i}}] > 0 && data.value[0][{{i}}] < 700)
+      {
+      $("#key_{{device_key[i]}}_value").css("backgroundColor", "#90EE90");
+      }
+      else if (data.value[0][{{i}}] > 700 && data.value[0][{{i}}] < 900)
+      {
+      $("#key_{{device_key[i]}}_value").css("backgroundColor", "#F0E68C");
+      }
+      else
+      {
+      $("#key_{{device_key[i]}}_value").css("backgroundColor", "#F08080");
+      }
+
+      if (data.value_2[0][{{i}}] > 0 && data.value_2[0][{{i}}] < 700)
+      {
+      $("#key_{{device_key[i]}}_value_2").css("backgroundColor", "#90EE90");
+      }
+      else if (data.value_2[0][{{i}}] > 700 && data.value_2[0][{{i}}] < 900)
+      {
+      $("#key_{{device_key[i]}}_value_2").css("backgroundColor", "#F0E68C");
+
+      }
+      else
+      {
+      $("#key_{{device_key[i]}}_value_2").css("backgroundColor", "#F08080");
+      }
+
+
+
+      console.log(data.value[0][{{i}}])
+      console.log(data.value_2[0][{{i}}])
+      console.log(data.time[0][{{i}}])
       {%endfor%}
     }
   });
@@ -207,9 +279,14 @@ $(document).ready(function() {
   </script>
 
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Dashboard</title>
 </head>
 <body>
+<div class="topnav">
+  <a class="active" href="/dashboard">Dashboard</a>
+  <a class="logout" href="/logout">Log Out</a>
+
+</div>
 
 <div class="container">
   <div class="row">
@@ -221,18 +298,20 @@ $(document).ready(function() {
       <div class="card">
         <div class="card-body">
           {% if username %}
-          <h5 class="card-title">{{ username }}</h5>
+
             <p> You Have {{sensors_number}} Sensors </p>
             <table class="customers">
           <tr>
             <th>Device Key</th>
-            <th>Device Data</th>
+            <th>Natural Gas <p> </p></th>
+            <th>Carbon Monooxide</th>
             <th>Data's Time</th>
           </tr>
           {%for i in range(0, len)%}
                 <tr>
-            <td id = "key_{{device_key[i]}}" > {{device_key[i]}} </td>
+            <td id = "key_{{device_key[i]}}" > <a href="/v1/sensor_page/{{device_key[i]}}">{{device_key[i]}}</a> </td>
             <td id = "key_{{device_key[i]}}_value" > Loading </td>
+            <td id = "key_{{device_key[i]}}_value_2" > Loading </td>
             <td id = "key_{{device_key[i]}}_date" > device_date </td>
           </tr>
 
@@ -244,7 +323,7 @@ $(document).ready(function() {
 
           {% endif %}
 
-            <h2>Add New Device</h2>
+            <h2> </h2>
 
 <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Add Device</button>
 
@@ -253,7 +332,7 @@ $(document).ready(function() {
   <form class="modal-content animate" action="{{ url_for('add_device') }}" method="post">
     <div class="imgcontainer">
       <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
-      <img src="/static/add_icon.png" alt="Avatar" class="avatar">
+      <img src="/static/add_icon.png" alt="Avatar" class="avatar" width="250" height="400">
     </div>
 
     <div class="container">
