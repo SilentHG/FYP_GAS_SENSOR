@@ -1,9 +1,7 @@
-from flask import Flask, render_template, request, flash, url_for, redirect, session, jsonify, make_response
-import pyodbc
+from flask import Flask, render_template, request, flash, url_for, redirect, session, jsonify
 import datetime
-from waitress import serve
 import mysql.connector
-from datetime import timezone
+
 app = Flask(__name__)
 
 
